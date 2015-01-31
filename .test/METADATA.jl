@@ -1,6 +1,15 @@
 const url_reg = r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?"
 const gh_path_reg_git=r"^/(.*)?/(.*)?.git$"
 
+#Check that all listed packages at at least one tagged version
+for pkg in readdir("METADATA")
+    startswith(pkg, ".") && continue
+    isfile(joinpath("METADATA", pkg)) && continue
+    if !("versions" in readdir(joinpath("METADATA", pkg)))
+        warn("Package $pkg has no tagged versions")
+    end
+end
+
 for (pkg, versions) in Pkg.Read.available()
     url = (Pkg.Read.url(pkg))
     @assert length(versions) > 0 "Package $pkg has no tagged versions."
